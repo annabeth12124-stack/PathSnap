@@ -1,0 +1,22 @@
+{
+ "selected_key": "lgbm",
+ "tuned": {
+  "macro_f1": 0.8704632245905908,
+  "log_loss": 0.19521778562422248,
+  "accuracy": 0.9159707724425887,
+  "top1": 0.815037358273682,
+  "continuity": 0.8969190600522193,
+  "threshold": 0.3999999999999999,
+  "n_obs_ref_ok": 19139
+ },
+ "untuned_baseline": {
+  "macro_f1": 0.8703935352762024,
+  "log_loss": 0.1916576475869268,
+  "accuracy": 0.9165031315240083,
+  "top1": 0.815141856941324,
+  "continuity": 0.8974412532637076,
+  "threshold": 0.41999999999999993,
+  "n_obs_ref_ok": 19139
+ },
+ "note": "report-only; not used for any selection or tuning decision"
+}

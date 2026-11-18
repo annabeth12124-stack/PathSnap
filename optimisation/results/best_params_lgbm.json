@@ -1,0 +1,35 @@
+{
+ "model": "lgbm",
+ "model_name": "LightGBM",
+ "best_trial": 14,
+ "best_value": 0.84922755096798,
+ "objective": "mean fold Macro F1 (5-fold GroupKFold by trip, pooled-OOF threshold)",
+ "params": {
+  "n_estimators": 600,
+  "learning_rate": 0.010063574121249752,
+  "num_leaves": 37,
+  "min_child_samples": 48,
+  "subsample": 0.7913149836731419,
+  "colsample_bytree": 0.620191106142558,
+  "reg_lambda": 7.4439394807376615
+ },
+ "cv_summary": {
+  "macro_f1_mean": 0.8532149139281655,
+  "macro_f1_std": 0.03024232406160271,
+  "macro_f1_thr050_mean": 0.84922755096798,
+  "macro_f1_thr050_std": 0.03183152939834122,
+  "top1_mean": 0.7745016430629243,
+  "top1_std": 0.0525739967677973,
+  "log_loss_mean": 0.2189279936957725,
+  "log_loss_std": 0.03810950835188531,
+  "obs_nll_mean": 0.5443620435921381,
+  "obs_nll_std": 0.10816986877335413,
+  "continuity_mean": 0.7488263633760532,
+  "continuity_std": 0.06616958312435271
+ },
+ "threshold": 0.3999999999999999,
+ "n_trials_completed": 20,
+ "n_trials_total": 20,
+ "sampler": "TPESampler(seed=42, multivariate=True, n_startup_trials=10)",
+ "seed": 42
+}
