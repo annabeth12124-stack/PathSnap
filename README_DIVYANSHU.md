@@ -14,12 +14,16 @@ Open `http://localhost:8000/` for the route viewer. On the other laptop, open `h
 
 ## API
 
-* `GET /health` - service health.
-* `GET /trips?split=student_test` - available trip IDs (`train` is also supported).
-* `POST /predict/{trip_id}?split=student_test` - classifier-only top candidate and HMM route, GPS fixes, arc geometry, and transition counts.
+* `GET /health` - service status and selected model name.
+* `GET /trips?split=student_test` - available trip IDs. `train` and `evaluator_test` are also supported when their data folders are present.
+* `POST /predict/{trip_id}?split=student_test` - classifier-only top candidate, HMM route, GPS fixes, arc geometry, transition counts, processing time, and aggregate evaluation metrics when a `.route` reference file is available.
 
-The route viewer defaults to `student_test`; it does not load evaluator data. The HMM uses classifier `prob_obs` as its emission likelihood and a Laplace likelihood of the difference between GPS displacement and shortest directed network distance as its transition likelihood. An impossible transition has probability zero. If all transitions into a fix are impossible, Viterbi starts a new segment and marks that break in `predicted_route`.
+The route viewer compares classifier-only output with the HMM and shows per-trip metrics, a trip summary, all-trip results, and a request log. It defaults to `student_test` and can also use `evaluator_test` when that split is extracted under `data/evaluator_test/<trip_id>/`. Its optional street basemap uses online OpenStreetMap tiles and shows the required attribution; without internet, the route overlay still works on the plain map canvas. Keep the `.route` files on the API server: the endpoint aligns reference labels and returns only aggregate scores, never the reference route or per-fix labels.
+
+Top-1 accuracy is the share of reference-reliable GPS fixes whose selected arc matches the aligned reference arc. Reliability uses the existing 75 m threshold. Route F1 is the harmonic mean of precision and recall over the unique predicted and reference arc sets at those reliable fixes. Route continuity is the share of consecutive HMM transitions marked connected. These metrics are descriptive evaluation results; the evaluator split is not used to train or tune the model.
+
+The HMM uses classifier `prob_obs` as its emission likelihood and a Laplace compatibility potential based on the difference between GPS displacement and shortest directed network distance. An impossible transition has probability zero. If all transitions into a fix are impossible, Viterbi starts a new segment and decodes that segment independently.
 
 ## Current scope and remaining evidence
 
-The service and UI expose a classifier-only vs classifier-plus-HMM comparison and report transition continuity. `README_TUNING.md` documents the model interface. Before presenting this as deployment-ready, run the service on the actual server laptop, open it from the second laptop, and save the requested connection log and screenshots under `results/integration/`. Confirm the actual LAN IP and firewall policy on the deployment machines; they are machine-specific.
+`README_TUNING.md` documents the classifier interface. Before presenting this as deployment-ready, run the service on the actual server laptop, open it from the second laptop, and save the connection log and screenshots under `results/integration/`. Confirm the actual LAN IP and firewall policy on the deployment machines; they are machine-specific. The evaluator trip set appears only after its archive is extracted into `data/` so the resulting folder is `data/evaluator_test/`.

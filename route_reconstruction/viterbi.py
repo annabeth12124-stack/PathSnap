@@ -33,8 +33,11 @@ def viterbi(candidate_df, transition_model, gps_distances):
         first["prob_obs"].to_numpy(dtype=float) + 1e-12
     )
 
-    backpointers = []
+    # A pointer at observation i maps its states to observation i - 1.
+    # Disconnected observations start new segments and have no such pointer.
+    backpointers = [None]
     breaks = [False]
+    scores_by_observation = [scores.copy()]
 
     # Process subsequent observations
     for obs_index in range(1, len(observations)):
@@ -53,12 +56,12 @@ def viterbi(candidate_df, transition_model, gps_distances):
         )
 
         next_scores = np.full(len(current_states), -np.inf)
-        pointers = np.zeros(len(current_states), dtype=int)
+        pointers = np.full(len(current_states), -1, dtype=int)
 
         for j, current in current_states.iterrows():
 
             best_score = -np.inf
-            best_previous = 0
+            best_previous = -1
 
             for i, previous in previous_states.iterrows():
 
@@ -86,21 +89,30 @@ def viterbi(candidate_df, transition_model, gps_distances):
         if disconnected:
             # Retain this observation and explicitly start a new route segment.
             next_scores = current_emissions.copy()
-            pointers[:] = 0
+            pointers = None
 
         scores = next_scores
         backpointers.append(pointers)
         breaks.append(disconnected)
+        scores_by_observation.append(scores.copy())
 
-    # Backtrack
-    state_index = int(np.argmax(scores))
-    selected = [state_index]
+    # Decode each connected segment independently. A single backtrack over
+    # the full trip would let a later segment choose a state before a break.
+    selected = [None] * len(observations)
+    segment_start = 0
+    segment_ends = [i for i in range(1, len(observations)) if breaks[i]]
+    segment_ends.append(len(observations))
 
-    for pointers in reversed(backpointers):
-        state_index = int(pointers[state_index])
-        selected.append(state_index)
+    for segment_end_exclusive in segment_ends:
+        segment_end = segment_end_exclusive - 1
+        state_index = int(np.argmax(scores_by_observation[segment_end]))
+        selected[segment_end] = state_index
 
-    selected.reverse()
+        for obs_index in range(segment_end, segment_start, -1):
+            state_index = int(backpointers[obs_index][state_index])
+            selected[obs_index - 1] = state_index
+
+        segment_start = segment_end_exclusive
 
     result = []
 
