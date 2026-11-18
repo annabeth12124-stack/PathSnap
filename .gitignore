@@ -32,3 +32,6 @@ data/evaluator_testing/
 # OS files
 .DS_Store
 Thumbs.db
+
+data/raw/
+data/processed/
