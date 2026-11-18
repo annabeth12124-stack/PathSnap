@@ -1,0 +1,133 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>PathSnap · Route reconstruction</title>
+  <style>
+    :root{font:16px/1.45 system-ui,-apple-system,"Segoe UI",sans-serif;color:#232734;background:#f7f8fa;--ink:#282b36;--muted:#737987;--line:#e2e4e9;--red:#f14e55;--green:#16805f;--blue:#4169ab;--panel:#fff}
+    *{box-sizing:border-box}body{margin:0;min-height:100vh}button,input,select{font:inherit}button{cursor:pointer}button:disabled{cursor:wait;opacity:.58}
+    .layout{min-height:100vh;display:grid;grid-template-columns:300px minmax(0,1fr)}aside{background:#f0f1f4;border-right:1px solid var(--line);padding:28px 22px;display:flex;flex-direction:column;gap:19px}.brand{font-size:1.35rem;font-weight:750;letter-spacing:-.03em}.tagline{color:var(--muted);margin-top:-15px}.field-label{display:block;font-size:.84rem;font-weight:650;margin-bottom:7px}.field{width:100%;border:1px solid var(--line);background:white;border-radius:9px;padding:10px 11px;color:var(--ink)}.connection{border-radius:10px;padding:12px;background:#fff0f0;color:#a3363c;font-size:.9rem}.connection.ok{background:#def1e9;color:#276b51}.connection small{display:block;margin-top:4px;color:inherit;opacity:.85}.actions{display:grid;gap:9px}.primary,.secondary{border:0;border-radius:9px;padding:12px 14px;font-weight:650}.primary{background:var(--red);color:#fff}.secondary{background:#e7e9ee;color:#343846;border:1px solid #c9cdd5}.checks{border-top:1px solid #d4d7de;padding-top:14px;display:grid;gap:11px;color:#555b68;font-size:.9rem}.checks label{display:flex;align-items:center;gap:9px}.checks input{accent-color:var(--red)}.note{color:var(--muted);font-size:.82rem;margin-top:auto}
+    main{min-width:0;padding:36px clamp(20px,5vw,72px)}.page-head{display:flex;justify-content:space-between;align-items:flex-start;gap:16px}.page-head h1{font-size:2rem;line-height:1.15;margin:0 0 9px;letter-spacing:-.035em}.page-head p{margin:0;color:var(--muted)}.dataset-note{font-size:.88rem;color:var(--muted);padding-top:8px}.trip-pills{display:flex;overflow:auto;margin:20px 0 18px;border-bottom:1px solid var(--line);padding-bottom:1px}.trip-pills button{white-space:nowrap;border:1px solid var(--line);border-right:0;background:#fff;padding:8px 14px;color:#4a4e59}.trip-pills button:first-child{border-radius:8px 0 0 8px}.trip-pills button:last-child{border-right:1px solid var(--line);border-radius:0 8px 8px 0}.trip-pills button.active{color:#bd343d;background:#fff3f3;border-color:#f4a5a8;z-index:1}
+    .metrics{display:grid;grid-template-columns:repeat(5,minmax(140px,1fr));gap:22px;margin:22px 0 24px}.metric{min-width:0}.metric-label{font-size:.9rem;color:#535966;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.metric-value{font-size:2.15rem;letter-spacing:-.04em;font-weight:550;margin-top:4px}.metric-foot{font-size:.82rem;color:var(--muted)}.improvement{display:inline-block;background:#e5f4eb;color:#28734d;border-radius:99px;padding:4px 10px;margin-top:5px;font-size:.82rem}
+    .tabs{display:flex;gap:20px;border-bottom:1px solid var(--line);margin-bottom:14px;overflow:auto}.tab{border:0;background:transparent;color:#555b68;padding:10px 2px 9px;white-space:nowrap;border-bottom:2px solid transparent}.tab.active{color:#b8343e;border-color:var(--red);font-weight:650}.panel{display:none}.panel.active{display:block}.map-wrap{background:white;border:1px solid var(--line);border-radius:10px;padding:12px}.map-head{display:flex;gap:18px;align-items:center;flex-wrap:wrap;color:#565c68;font-size:.9rem;margin:0 0 10px}.legend i{display:inline-block;width:10px;height:10px;border-radius:50%;margin-right:5px}.map-stage{position:relative;overflow:hidden;border:1px solid var(--line);border-radius:8px;background:#edf1f4}.map{display:block;width:100%;height:auto;min-height:340px;aspect-ratio:1000/560;background:#edf1f4}.map-credit{position:absolute;right:8px;bottom:8px;border-radius:4px;padding:3px 7px;background:rgba(255,255,255,.92);font-size:.75rem;color:#38404a}.map-credit a{color:#345f92;text-decoration:none}.map-zoom{position:absolute;left:12px;top:12px;display:grid;border:1px solid #cbd0d7;border-radius:7px;overflow:hidden;box-shadow:0 1px 4px #0002}.map-zoom button{width:36px;height:36px;border:0;background:#fff;color:#222;font-size:1.25rem}.map-zoom button+button{border-top:1px solid #dfe2e7}.empty{display:grid;place-items:center;height:100%;min-height:300px;color:var(--muted);text-align:center;padding:30px}.table-wrap{overflow:auto;background:white;border:1px solid var(--line);border-radius:10px}table{width:100%;border-collapse:collapse;min-width:640px}th,td{text-align:left;padding:11px 13px;border-bottom:1px solid #eceef1}th{font-size:.8rem;color:#676d78;background:#fafbfc}td{font-size:.9rem}tbody tr:last-child td{border-bottom:0}.summary-card{background:white;border:1px solid var(--line);border-radius:10px;padding:20px}.summary-card h2{font-size:1.1rem;margin:0 0 12px}.summary-grid{display:grid;grid-template-columns:repeat(3,minmax(130px,1fr));gap:15px}.summary-grid div{border-radius:8px;background:#f7f8fa;padding:12px}.summary-grid b{display:block;font-size:1.15rem}.summary-grid span{font-size:.82rem;color:var(--muted)}.explain{font-size:.87rem;color:var(--muted);margin:18px 0 0}.log-list{display:grid;gap:8px}.log-entry{background:#fff;border:1px solid var(--line);border-radius:8px;padding:11px 13px;font-size:.86rem}.log-entry small{display:block;color:var(--muted);margin-top:3px}.status{min-height:1.4em;color:var(--muted);font-size:.88rem;margin-top:8px}
+    @media(max-width:980px){.layout{grid-template-columns:245px minmax(0,1fr)}main{padding:28px 24px}.metrics{grid-template-columns:repeat(3,minmax(110px,1fr))}}
+    @media(max-width:700px){.layout{grid-template-columns:1fr}aside{border-right:0;border-bottom:1px solid var(--line);padding:18px;gap:13px}.note{margin-top:0}main{padding:24px 16px}.metrics{grid-template-columns:repeat(2,minmax(125px,1fr));gap:12px}.metric-value{font-size:1.65rem}.map{min-height:300px}.summary-grid{grid-template-columns:repeat(2,minmax(120px,1fr))}}
+  </style>
+</head>
+<body>
+  <div class="layout">
+    <aside>
+      <div class="brand">🗺️ PathSnap</div>
+      <div class="tagline">Map matching: noisy GPS → road route</div>
+
+      <div>
+        <label class="field-label" for="apiAddress">API address (Laptop 1)</label>
+        <input class="field" id="apiAddress" autocomplete="url" spellcheck="false">
+        <div class="actions" style="margin-top:8px"><button class="secondary" id="connect">Connect</button></div>
+      </div>
+      <div class="connection" id="connection" role="status">Connecting to PathSnap…</div>
+
+      <div>
+        <label class="field-label" for="split">Trip set</label>
+        <select class="field" id="split">
+          <option value="student_test">Student test (development)</option>
+          <option value="evaluator_test">Evaluator test (final evaluation)</option>
+        </select>
+      </div>
+      <div>
+        <label class="field-label" for="trip">Evaluation trip</label>
+        <select class="field" id="trip"><option value="">Loading trips…</option></select>
+      </div>
+      <div class="actions">
+        <button class="primary" id="run">Reconstruct route</button>
+        <button class="secondary" id="runAll">Run all trips</button>
+      </div>
+      <div class="status" id="status" role="status"></div>
+
+      <div class="checks">
+        <label><input id="showNetwork" type="checkbox"> Show road network</label>
+        <label><input id="showSnapped" type="checkbox"> Show snapped positions</label>
+        <label><input id="showStreet" type="checkbox" checked> Street map (internet)</label>
+      </div>
+      <div class="note">Reference routes stay on the API server. This page receives predictions and aggregate scores only.</div>
+    </aside>
+
+    <main>
+      <div class="page-head">
+        <div><h1>Route reconstruction</h1><p id="tripHeading">Choose a trip and reconstruct its route.</p></div>
+        <div class="dataset-note" id="tripCount"></div>
+      </div>
+      <div class="trip-pills" id="tripPills" aria-label="Available trips"></div>
+
+      <section class="metrics" aria-label="Trip evaluation metrics">
+        <div class="metric"><div class="metric-label">Top-1 accuracy (classifier + HMM)</div><div class="metric-value" id="hmmAccuracy">—</div><div class="metric-foot" id="accuracyCount">Reference labels unavailable</div></div>
+        <div class="metric"><div class="metric-label">Classifier only</div><div class="metric-value" id="classifierAccuracy">—</div><div class="metric-foot">Top-1 accuracy</div></div>
+        <div class="metric"><div class="metric-label">Route continuity</div><div class="metric-value" id="continuity">—</div><div class="metric-foot">Connected HMM transitions</div></div>
+        <div class="metric"><div class="metric-label">Route F1 (vs reference)</div><div class="metric-value" id="routeF1">—</div><div class="metric-foot">Arc-set precision and recall</div></div>
+        <div class="metric"><div class="metric-label">Processing time (API)</div><div class="metric-value" id="processingTime">—</div><div class="metric-foot">Prediction and scoring</div></div>
+      </section>
+      <div class="improvement" id="improvement" hidden></div>
+
+      <nav class="tabs" aria-label="Trip views">
+        <button class="tab active" data-panel="mapPanel">Map</button>
+        <button class="tab" data-panel="summaryPanel">Trip summary</button>
+        <button class="tab" data-panel="allPanel">All trips &amp; conclusions</button>
+        <button class="tab" data-panel="logPanel">Request log</button>
+      </nav>
+
+      <section class="panel active" id="mapPanel">
+        <div class="map-wrap">
+          <div class="map-head legend"><span><i style="background:#8994a5"></i>GPS fixes</span><span><i style="background:#3670bd"></i>Classifier only</span><span><i style="background:#e44750"></i>HMM route</span></div>
+          <div class="map-stage">
+            <svg class="map" id="map" viewBox="0 0 1000 560" role="img" aria-label="GPS observations and predicted routes"><text x="500" y="280" text-anchor="middle" fill="#737987">Reconstruct a trip to display its route.</text></svg>
+            <div class="map-zoom"><button type="button" id="zoomIn" aria-label="Zoom in">+</button><button type="button" id="zoomOut" aria-label="Zoom out">−</button></div>
+            <div class="map-credit"><a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener noreferrer">© OpenStreetMap contributors</a></div>
+          </div>
+        </div>
+      </section>
+      <section class="panel" id="summaryPanel"><div class="summary-card" id="summary"><h2>Trip summary</h2><p class="explain">Reconstruct a trip to see its observation count, segment breaks and reference-label coverage.</p></div></section>
+      <section class="panel" id="allPanel"><div class="table-wrap"><table><thead><tr><th>Trip</th><th>HMM Top-1</th><th>Classifier Top-1</th><th>Continuity</th><th>Route F1</th><th>API time</th></tr></thead><tbody id="allRows"><tr><td colspan="6">Run all trips to populate this table.</td></tr></tbody></table></div><p class="explain" id="conclusion">The trip-level conclusion will appear after the available trips have been processed.</p></section>
+      <section class="panel" id="logPanel"><div class="log-list" id="requestLog"><div class="log-entry">No requests yet.</div></div></section>
+    </main>
+  </div>
+
+  <script>
+    const apiAddress=document.querySelector('#apiAddress'),connection=document.querySelector('#connection'),connectButton=document.querySelector('#connect'),split=document.querySelector('#split'),trip=document.querySelector('#trip'),run=document.querySelector('#run'),runAll=document.querySelector('#runAll'),status=document.querySelector('#status'),map=document.querySelector('#map'),tripPills=document.querySelector('#tripPills');
+    const results=new Map(),requestEntries=[];let currentData=null,tripIds=[],zoomOffset=0;
+    apiAddress.value=location.protocol==='file:'?'http://localhost:8000':location.origin;
+    function apiRoot(){let value=apiAddress.value.trim();if(value&&!/^https?:\/\//i.test(value))value=`http://${value}`;return value.replace(/\/+$/,'')}
+    function esc(value){return String(value).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
+    function pct(value){return Number.isFinite(value)?`${(value*100).toFixed(2)}%`:'—'}
+    function seconds(value){return Number.isFinite(value)?`${value.toFixed(2)} s`:'—'}
+    function addLog(text,detail=''){requestEntries.unshift({text,detail});requestEntries.splice(12);document.querySelector('#requestLog').innerHTML=requestEntries.map(e=>`<div class="log-entry">${esc(e.text)}<small>${esc(e.detail)}</small></div>`).join('')}
+    async function connect(){connectButton.disabled=true;results.clear();clearMetrics();tripIds=[];document.querySelector('#allRows').innerHTML='<tr><td colspan="6">Run all trips to populate this table.</td></tr>';document.querySelector('#conclusion').textContent='The trip-level conclusion will appear after the available trips have been processed.';connection.className='connection';connection.textContent='Connecting to PathSnap…';try{const r=await fetch(`${apiRoot()}/health`);if(!r.ok)throw Error(`HTTP ${r.status}`);const d=await r.json();connection.className='connection ok';connection.replaceChildren(document.createTextNode(`Connected · ${d.model||'PathSnap API'}`));const small=document.createElement('small');small.textContent='API is responding';connection.append(small);await loadTrips()}catch(e){connection.className='connection';connection.textContent=`Could not connect: ${e.message}`}finally{connectButton.disabled=false}}
+    async function loadTrips(){tripIds=[];trip.replaceChildren(new Option('Loading trips…',''));tripPills.replaceChildren();try{const r=await fetch(`${apiRoot()}/trips?split=${encodeURIComponent(split.value)}`);const d=await r.json();if(!r.ok)throw Error(d.detail||`HTTP ${r.status}`);tripIds=d.trip_ids||[];trip.replaceChildren(...tripIds.map(id=>new Option(id,id)));document.querySelector('#tripCount').textContent=`${tripIds.length} trips in this set`;drawTripPills();if(!tripIds.length){status.textContent='No trips are available in this dataset folder.';return}trip.value=tripIds[0];status.textContent=`${tripIds.length} trips available.`}catch(e){trip.replaceChildren(new Option('Dataset unavailable',''));document.querySelector('#tripCount').textContent='';status.textContent=`Could not load ${split.options[split.selectedIndex].text}: ${e.message}`;document.querySelector('#allRows').innerHTML='<tr><td colspan="6">Dataset unavailable.</td></tr>'}}
+    function drawTripPills(){tripPills.innerHTML=tripIds.map(id=>`<button type="button" class="${id===trip.value?'active':''}" data-trip="${esc(id)}">${esc(id)}</button>`).join('');tripPills.querySelectorAll('button').forEach(b=>b.addEventListener('click',()=>selectTrip(b.dataset.trip)))}
+    function selectTrip(id){zoomOffset=0;trip.value=id;drawTripPills();const d=results.get(id);if(d){currentData=d;showMetrics(d);draw(d);status.textContent=`Showing saved result for ${id}.`}else{clearMetrics();document.querySelector('#tripHeading').textContent=`Trip ${id} · ready to reconstruct`;status.textContent=`Ready to reconstruct ${id}.`}}
+    function clearMetrics(){for(const id of ['hmmAccuracy','classifierAccuracy','continuity','routeF1','processingTime'])document.getElementById(id).textContent='—';document.querySelector('#accuracyCount').textContent='Reference labels unavailable';document.querySelector('#improvement').hidden=true;currentData=null;map.innerHTML='<text x="500" y="280" text-anchor="middle" fill="#737987">Reconstruct this trip to display its route.</text>';document.querySelector('#summary').innerHTML='<h2>Trip summary</h2><p class="explain">Reconstruct a trip to see its observation count, segment breaks and reference-label coverage.</p>'}
+    function showMetrics(d){const m=d.metrics||{};document.querySelector('#hmmAccuracy').textContent=pct(m.hmm_top1_accuracy);document.querySelector('#classifierAccuracy').textContent=pct(m.classifier_top1_accuracy);document.querySelector('#continuity').textContent=pct(d.route_continuity);document.querySelector('#routeF1').textContent=pct(m.route_f1);document.querySelector('#processingTime').textContent=seconds(d.processing_time_seconds);document.querySelector('#accuracyCount').textContent=m.available?`${m.reference_observations} reference-reliable GPS fixes`:'Reference labels unavailable';const delta=m.available?100*(m.hmm_top1_accuracy-m.classifier_top1_accuracy):NaN,improvement=document.querySelector('#improvement');improvement.hidden=!Number.isFinite(delta);if(Number.isFinite(delta))improvement.textContent=`${delta>=0?'↑':'↓'} ${Math.abs(delta).toFixed(2)} pts vs classifier only`;document.querySelector('#tripHeading').textContent=`Trip ${d.trip_id} · ${d.split.replace('_',' ')} · ${d.observations.toLocaleString()} GPS fixes`;const good=m.available?`${m.reference_observations} fixes within ${m.reference_reliability_m} m of the reference route`:'No reference route file is available for scoring.';document.querySelector('#summary').innerHTML=`<h2>Trip ${esc(d.trip_id)}</h2><div class="summary-grid"><div><b>${d.observations.toLocaleString()}</b><span>GPS observations</span></div><div><b>${d.valid_transitions.toLocaleString()} / ${Math.max(0,d.observations-1).toLocaleString()}</b><span>connected transitions</span></div><div><b>${d.invalid_transitions}</b><span>segment breaks</span></div><div><b>${pct(m.hmm_top1_accuracy)}</b><span>HMM Top-1 accuracy</span></div><div><b>${pct(m.route_f1)}</b><span>route arc-set F1</span></div><div><b>${seconds(d.processing_time_seconds)}</b><span>API processing time</span></div></div><p class="explain">${esc(good)}. Top-1 accuracy compares the selected arc at each reliable fix with the aligned reference arc. Route F1 compares the unique arc sets. Reference labels are scored on the API server and are not sent to this page.</p>`}
+    async function reconstruct(id=trip.value,renderMap=true){if(!id)throw Error('Choose an available trip first.');run.disabled=true;status.textContent=`Reconstructing ${id}…`;const started=performance.now();try{const r=await fetch(`${apiRoot()}/predict/${encodeURIComponent(id)}?split=${encodeURIComponent(split.value)}`,{method:'POST'});const d=await r.json();if(!r.ok)throw Error(d.detail||`HTTP ${r.status}`);results.set(id,d);currentData=d;showMetrics(d);if(renderMap)draw(d);drawTripPills();renderAllRows();status.textContent=`Route reconstruction complete for ${id}.`;addLog(`Completed ${id}`,`API ${seconds(d.processing_time_seconds)} · browser round trip ${seconds((performance.now()-started)/1000)}`);return d}catch(e){addLog(`Failed ${id}`,e.message);throw e}finally{if(!runAll.disabled)run.disabled=false}}
+    function mercator(point,z){const scale=256*2**z,lat=Math.max(-85.05112878,Math.min(85.05112878,point[1]))*Math.PI/180,sin=Math.sin(lat);return [(point[0]+180)/360*scale,(.5-Math.log((1+sin)/(1-sin))/(4*Math.PI))*scale]}
+    function fitMap(points){const xs=points.map(p=>p[0]),ys=points.map(p=>p[1]),west=Math.min(...xs),east=Math.max(...xs),south=Math.min(...ys),north=Math.max(...ys),centerPoint=[(west+east)/2,(south+north)/2];let fitZoom=3;for(let z=19;z>=3;z--){const a=mercator([west,north],z),b=mercator([east,south],z);if(Math.abs(b[0]-a[0])<=900&&Math.abs(b[1]-a[1])<=460){fitZoom=z;break}}const z=Math.max(3,Math.min(19,fitZoom+zoomOffset)),center=mercator(centerPoint,z);return {z,center,xy(point){const q=mercator(point,z);return [500+q[0]-center[0],280+q[1]-center[1]]}}}
+    function tileLayer(view){if(!document.querySelector('#showStreet').checked)return '';const z=view.z,n=2**z,left=view.center[0]-500,top=view.center[1]-280,x0=Math.floor(left/256),x1=Math.floor((left+1000)/256),y0=Math.floor(top/256),y1=Math.floor((top+560)/256);let images='';for(let x=x0;x<=x1;x++)for(let y=y0;y<=y1;y++){if(y<0||y>=n)continue;const wrappedX=((x%n)+n)%n,px=x*256-left,py=y*256-top;images+=`<image href="https://tile.openstreetmap.org/${z}/${wrappedX}/${y}.png" x="${px}" y="${py}" width="256" height="256"/>`}return images}
+    function snapPoint(row,d){const c=d.arc_coordinates[row.arc_id];if(!c)return null;const f=Math.max(0,Math.min(1,Number(row.projection_fraction)||0));return [c[0][0]+f*(c[1][0]-c[0][0]),c[0][1]+f*(c[1][1]-c[0][1])]}
+    function polyline(points,color,width,opacity=1){if(points.length<2)return '';return `<polyline points="${points.map(p=>p.join(',')).join(' ')}" fill="none" stroke="${color}" stroke-width="${width}" stroke-linecap="round" stroke-linejoin="round" opacity="${opacity}"/>`}
+    function draw(d){const pts=d.gps_track.map(p=>[p.longitude,p.latitude]);if(!pts.length)return;const view=fitMap(pts),xy=view.xy,tiles=tileLayer(view);let network='';if(document.querySelector('#showNetwork').checked)network=Object.values(d.arc_coordinates).map(c=>{const a=xy(c[0]),b=xy(c[1]);return `<line x1="${a[0]}" y1="${a[1]}" x2="${b[0]}" y2="${b[1]}"/>`}).join('');const classifierGroups=[];let active=[];d.classifier_only.forEach((row,i)=>{const previous=d.classifier_only[i-1],joins=!previous||row.arc_id===previous.arc_id||row.from_node_id===previous.to_node_id;if(!joins&&active.length){classifierGroups.push(active);active=[]}const p=snapPoint(row,d);if(p)active.push(xy(p))});if(active.length)classifierGroups.push(active);const hmmGroups=[];let lastSegment=null;for(const row of d.predicted_route){if(lastSegment!==row.segment_id){hmmGroups.push([]);lastSegment=row.segment_id}const p=snapPoint(row,d);if(p)hmmGroups[hmmGroups.length-1].push(xy(p))}const classifier=classifierGroups.map(g=>polyline(g,'#3670bd',2.5,.86)).join(''),hmm=hmmGroups.map(g=>polyline(g,'#e44750',4,.96)).join(''),gps=pts.map(p=>{const q=xy(p);return `<circle cx="${q[0]}" cy="${q[1]}" r="1.5"/>`}).join('');let snapped='';if(document.querySelector('#showSnapped').checked)snapped=d.predicted_route.map(r=>{const p=snapPoint(r,d);if(!p)return '';const q=xy(p);return `<circle cx="${q[0]}" cy="${q[1]}" r="2.4"/>`}).join('');const first=xy(pts[0]),last=xy(pts[pts.length-1]);map.innerHTML=`<g>${tiles}</g><g fill="none" stroke="#68778b" stroke-width="1" opacity=".35">${network}</g><g fill="#8793a5" opacity=".42">${gps}</g>${classifier}${hmm}<g fill="#16805f" stroke="white" stroke-width="1.5">${snapped}</g><circle cx="${first[0]}" cy="${first[1]}" r="7" fill="#3268ae" stroke="white" stroke-width="2"/><text x="${first[0]}" y="${first[1]+4}" text-anchor="middle" fill="white" font-size="9" font-weight="700">S</text><circle cx="${last[0]}" cy="${last[1]}" r="7" fill="#e44750" stroke="white" stroke-width="2"/><text x="${last[0]}" y="${last[1]+4}" text-anchor="middle" fill="white" font-size="9" font-weight="700">E</text>`}
+    function renderAllRows(){const rows=[...results.values()];if(!rows.length)return;document.querySelector('#allRows').innerHTML=rows.map(d=>{const m=d.metrics||{};return `<tr><td>${esc(d.trip_id)}</td><td>${pct(m.hmm_top1_accuracy)}</td><td>${pct(m.classifier_top1_accuracy)}</td><td>${pct(d.route_continuity)}</td><td>${pct(m.route_f1)}</td><td>${seconds(d.processing_time_seconds)}</td></tr>`}).join('');const scored=rows.filter(d=>d.metrics?.available);if(scored.length){const avg=key=>scored.reduce((s,d)=>s+d.metrics[key],0)/scored.length;const delta=100*(avg('hmm_top1_accuracy')-avg('classifier_top1_accuracy'));document.querySelector('#conclusion').textContent=`Completed ${rows.length} of ${tripIds.length} trips; ${scored.length} had reference labels. Mean HMM Top-1 accuracy was ${pct(avg('hmm_top1_accuracy'))} vs ${pct(avg('classifier_top1_accuracy'))} classifier-only (${delta>=0?'+':''}${delta.toFixed(2)} points). Mean route continuity was ${pct(rows.reduce((s,d)=>s+d.route_continuity,0)/rows.length)} and route F1 was ${pct(avg('route_f1'))}.`}else{document.querySelector('#conclusion').textContent=`Completed ${rows.length} of ${tripIds.length} trips; reference labels were unavailable, so accuracy and route F1 could not be calculated.`}}
+    function setPanel(id){document.querySelectorAll('.tab').forEach(b=>b.classList.toggle('active',b.dataset.panel===id));document.querySelectorAll('.panel').forEach(p=>p.classList.toggle('active',p.id===id))}
+    connectButton.addEventListener('click',connect);
+    split.addEventListener('change',async()=>{results.clear();clearMetrics();zoomOffset=0;document.querySelector('#tripHeading').textContent='Choose a trip and reconstruct its route.';document.querySelector('#allRows').innerHTML='<tr><td colspan="6">Run all trips to populate this table.</td></tr>';document.querySelector('#conclusion').textContent='The trip-level conclusion will appear after the available trips have been processed.';await loadTrips()});
+    trip.addEventListener('change',()=>selectTrip(trip.value));
+    run.addEventListener('click',async()=>{try{await reconstruct()}catch(e){status.textContent=`Prediction failed: ${e.message}`}});
+    runAll.addEventListener('click',async()=>{if(!tripIds.length)return;runAll.disabled=true;run.disabled=true;results.clear();try{for(let i=0;i<tripIds.length;i++){status.textContent=`Reconstructing trip ${i+1} of ${tripIds.length}: ${tripIds[i]}…`;await reconstruct(tripIds[i],false);renderAllRows()}setPanel('allPanel');selectTrip(tripIds[0]);status.textContent=`Completed all ${tripIds.length} trips.`}catch(e){status.textContent=`Stopped after ${results.size} trips: ${e.message}`;renderAllRows()}finally{runAll.disabled=false;run.disabled=false}});
+    document.querySelectorAll('.tab').forEach(b=>b.addEventListener('click',()=>setPanel(b.dataset.panel)));
+    document.querySelector('#showNetwork').addEventListener('change',()=>currentData&&draw(currentData));
+    document.querySelector('#showSnapped').addEventListener('change',()=>currentData&&draw(currentData));
+    document.querySelector('#showStreet').addEventListener('change',()=>currentData&&draw(currentData));
+    document.querySelector('#zoomIn').addEventListener('click',()=>{zoomOffset=Math.min(5,zoomOffset+1);if(currentData)draw(currentData)});
+    document.querySelector('#zoomOut').addEventListener('click',()=>{zoomOffset=Math.max(-5,zoomOffset-1);if(currentData)draw(currentData)});
+    connect();
+  </script>
+</body>
+</html>
