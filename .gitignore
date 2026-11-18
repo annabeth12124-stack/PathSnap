@@ -35,3 +35,13 @@ Thumbs.db
 
 data/raw/
 data/processed/
+
+# Local datasets and generated cache
+data/train/
+data/student_test/
+data/evaluator_test/
+cache/
+
+# Python cache
+**/__pycache__/
+*.py[cod]

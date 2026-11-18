@@ -1,0 +1,52 @@
+2026-11-18 07:20:42,719 train rows used=233935 (ref_ok, stride 4); student rows=95800; seed=42; features=['distance_m', 'projection_fraction', 'segment_length_m', 'gps_speed_mps', 'gps_heading', 'arc_heading', 'heading_difference']
+2026-11-18 07:20:42,864 nearest-distance heuristic [train_cv_subset] {'top1': 0.5514138542757604, 'continuity': 0.6305907037489027, 'n_obs': 46787, 'miss_rate': 0.027571761386710025}
+2026-11-18 07:20:42,920 nearest-distance heuristic [student_test] {'top1': 0.5469982757719839, 'continuity': 0.8277284595300262, 'n_obs': 19139, 'miss_rate': 0.01933225351376766}
+2026-11-18 07:20:42,920 === lr start
+2026-11-18 07:20:43,290   [lr] fold 0 done
+2026-11-18 07:20:43,526   [lr] fold 1 done
+2026-11-18 07:20:43,740   [lr] fold 2 done
+2026-11-18 07:20:43,951   [lr] fold 3 done
+2026-11-18 07:20:44,201   [lr] fold 4 done
+2026-11-18 07:20:46,637 === lr done 4s CV macroF1=0.7859 CV top1=0.7457 test top1=0.7774 testF1=0.7970 LL=0.2900
+2026-11-18 07:20:46,640 === gnb start
+2026-11-18 07:20:46,905   [gnb] fold 0 done
+2026-11-18 07:20:47,064   [gnb] fold 1 done
+2026-11-18 07:20:47,226   [gnb] fold 2 done
+2026-11-18 07:20:47,390   [gnb] fold 3 done
+2026-11-18 07:20:47,536   [gnb] fold 4 done
+2026-11-18 07:20:49,996 === gnb done 3s CV macroF1=0.8010 CV top1=0.7414 test top1=0.7804 testF1=0.8126 LL=0.5062
+2026-11-18 07:20:49,999 === rf start
+2026-11-18 07:21:00,862   [rf] fold 0 done
+2026-11-18 07:21:11,464   [rf] fold 1 done
+2026-11-18 07:21:22,350   [rf] fold 2 done
+2026-11-18 07:22:09,304 train rows used=233935 (ref_ok, stride 4); student rows=95800; seed=42; features=['distance_m', 'projection_fraction', 'segment_length_m', 'gps_speed_mps', 'gps_heading', 'arc_heading', 'heading_difference']
+2026-11-18 07:22:09,452 nearest-distance heuristic [train_cv_subset] {'top1': 0.5514138542757604, 'continuity': 0.6305907037489027, 'n_obs': 46787, 'miss_rate': 0.027571761386710025}
+2026-11-18 07:22:09,508 nearest-distance heuristic [student_test] {'top1': 0.5469982757719839, 'continuity': 0.8277284595300262, 'n_obs': 19139, 'miss_rate': 0.01933225351376766}
+2026-11-18 07:22:09,509 === rf start
+2026-11-18 07:22:20,142   [rf] fold 0 done
+2026-11-18 07:22:31,002   [rf] fold 1 done
+2026-11-18 07:22:41,646   [rf] fold 2 done
+2026-11-18 07:22:52,757   [rf] fold 3 done
+2026-11-18 07:23:02,755   [rf] fold 4 done
+2026-11-18 07:23:19,803 === rf done 70s CV macroF1=0.8503 CV top1=0.7694 test top1=0.8180 testF1=0.8714 LL=0.1952
+2026-11-18 07:23:19,807 === hgb start
+2026-11-18 07:23:22,911   [hgb] fold 0 done
+2026-11-18 07:23:25,997   [hgb] fold 1 done
+2026-11-18 07:23:28,893   [hgb] fold 2 done
+2026-11-18 07:23:32,080   [hgb] fold 3 done
+2026-11-18 07:23:35,027   [hgb] fold 4 done
+2026-11-18 07:23:40,761 === hgb done 21s CV macroF1=0.8476 CV top1=0.7689 test top1=0.8121 testF1=0.8698 LL=0.1943
+2026-11-18 07:23:40,766 === lgbm start
+2026-11-18 07:23:44,654   [lgbm] fold 0 done
+2026-11-18 07:23:48,713   [lgbm] fold 1 done
+2026-11-18 07:23:52,573   [lgbm] fold 2 done
+2026-11-18 07:23:56,347   [lgbm] fold 3 done
+2026-11-18 07:24:00,470   [lgbm] fold 4 done
+2026-11-18 07:24:10,525 === lgbm done 30s CV macroF1=0.8495 CV top1=0.7710 test top1=0.8148 testF1=0.8699 LL=0.1914
+2026-11-18 07:24:10,529 === mlp start
+2026-11-18 07:24:36,352   [mlp] fold 0 done
+2026-11-18 07:25:01,826   [mlp] fold 1 done
+2026-11-18 07:25:19,347   [mlp] fold 2 done
+2026-11-18 07:25:43,891   [mlp] fold 3 done
+2026-11-18 07:26:08,669   [mlp] fold 4 done
+2026-11-18 07:26:43,765 === mlp done 153s CV macroF1=0.8446 CV top1=0.7640 test top1=0.8085 testF1=0.8651 LL=0.1973

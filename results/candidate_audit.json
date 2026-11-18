@@ -1,0 +1,70 @@
+{
+ "train": {
+  "candidate_rows": 1042085,
+  "gps_observations": 208417,
+  "trips": 80,
+  "candidates_per_obs_unique": [
+   5
+  ],
+  "sakshi_columns": 13,
+  "columns_present": true,
+  "nan_rows_per_feature": {
+   "distance_m": 0,
+   "projection_fraction": 0,
+   "segment_length_m": 0,
+   "gps_speed_mps": 400,
+   "gps_heading": 400,
+   "arc_heading": 0,
+   "heading_difference": 400
+  },
+  "nan_rows_any_feature": 400,
+  "inf_rows_any_feature": 0,
+  "nearest_gt_50m_pct": 8.80302470527836,
+  "nearest_gt_100m_pct": 0.6784475354697553,
+  "nearest_max_m": 256.8602805490825,
+  "nearest_median_m": 4.989834559243033,
+  "ref_ok_obs": 187024,
+  "ref_unreliable_obs": 21393,
+  "ref_unreliable_pct": 10.264517769663703,
+  "OBS_LEVEL_candidate_miss_rate_all_obs_pct": 11.383908222457862,
+  "OBS_LEVEL_candidate_miss_rate_ref_ok_obs_pct": 2.8306527504491403,
+  "nearest_candidate_is_ref_top1_ref_ok_pct": 55.07261100179656,
+  "positive_rate_candidates_pct": 17.723218355508426,
+  "trip_id_dtype": "str",
+  "timestamp_dt_nonpositive_steps": 0,
+  "timestamp_dt_gt_1s_pct": 3.4972184489552984
+ },
+ "student_test": {
+  "candidate_rows": 95800,
+  "gps_observations": 19160,
+  "trips": 10,
+  "candidates_per_obs_unique": [
+   5
+  ],
+  "sakshi_columns": 13,
+  "columns_present": true,
+  "nan_rows_per_feature": {
+   "distance_m": 0,
+   "projection_fraction": 0,
+   "segment_length_m": 0,
+   "gps_speed_mps": 50,
+   "gps_heading": 50,
+   "arc_heading": 0,
+   "heading_difference": 50
+  },
+  "nan_rows_any_feature": 50,
+  "inf_rows_any_feature": 0,
+  "nearest_gt_50m_pct": 0.0,
+  "nearest_gt_100m_pct": 0.0,
+  "nearest_max_m": 47.256322712314045,
+  "nearest_median_m": 4.769422760916813,
+  "ref_ok_obs": 19139,
+  "ref_unreliable_obs": 21,
+  "ref_unreliable_pct": 0.10960334029227556,
+  "OBS_LEVEL_candidate_miss_rate_all_obs_pct": 2.0198329853862216,
+  "OBS_LEVEL_candidate_miss_rate_ref_ok_obs_pct": 1.9280004179946706,
+  "nearest_candidate_is_ref_top1_ref_ok_pct": 54.66847797690579,
+  "positive_rate_candidates_pct": 19.596033402922757,
+  "trip_id_dtype": "str"
+ }
+}

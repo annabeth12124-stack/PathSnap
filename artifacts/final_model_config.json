@@ -1,0 +1,87 @@
+{
+ "phase": "Phase 1 baseline (no Bayesian optimisation)",
+ "selected_model": "LightGBM (untuned)",
+ "selected_key": "lgbm",
+ "selection_metric": "5-fold trip-grouped CV observation-level Top-1 (80 training trips only)",
+ "selection_ranking": [
+  [
+   "LightGBM (untuned)",
+   0.771,
+   0.0548
+  ],
+  [
+   "Random Forest",
+   0.7694,
+   0.0559
+  ],
+  [
+   "HistGradientBoosting",
+   0.7689,
+   0.0548
+  ],
+  [
+   "MLP (64,32)",
+   0.764,
+   0.0555
+  ],
+  [
+   "Logistic Regression",
+   0.7457,
+   0.0344
+  ],
+  [
+   "Gaussian Naive Bayes",
+   0.7414,
+   0.0382
+  ]
+ ],
+ "top_two_within_one_cv_std": true,
+ "features": [
+  "distance_m",
+  "projection_fraction",
+  "segment_length_m",
+  "gps_speed_mps",
+  "gps_heading",
+  "arc_heading",
+  "heading_difference"
+ ],
+ "identifier_columns_excluded": [
+  "trip_id",
+  "observation_id",
+  "arc_id",
+  "from_node_id",
+  "to_node_id",
+  "timestamp"
+ ],
+ "decision_threshold": 0.3999999999999999,
+ "hyperparameters": {
+  "n_estimators": 300,
+  "learning_rate": 0.05,
+  "num_leaves": 31,
+  "min_child_samples": 20,
+  "subsample": 0.8,
+  "colsample_bytree": 0.8,
+  "preprocessing": "median-impute"
+ },
+ "seed": 42,
+ "candidate_generation": {
+  "source": "Sakshi commit 441f431 preprocessing/candidate_generation.ipynb",
+  "projection": "local equirectangular, centre = mean track lat/lon, R=6371000",
+  "kdtree": "arc midpoints",
+  "k_nearby": 100,
+  "top_candidates": 5,
+  "distance_cutoff": null
+ },
+ "training": {
+  "trips": 80,
+  "rows": 233935,
+  "row_policy": "reference-reliable (aligned route arc within 75.0 m), every 4th observation"
+ },
+ "student_test_metrics": {
+  "test_top1": 0.8147761116045771,
+  "test_macro_f1": 0.8699064460031128,
+  "test_log_loss": 0.19135154384683248,
+  "test_continuity": 0.8970234986945169,
+  "inference_us_per_candidate": 12.557937108400221
+ }
+}
