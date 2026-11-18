@@ -1,0 +1,22 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>PathSnap Route Viewer</title>
+  <style>
+    :root{font:16px system-ui;color:#17212b;background:#f4f7fa}body{max-width:1100px;margin:32px auto;padding:0 18px}header,section{background:white;border:1px solid #dce4eb;border-radius:12px;padding:20px;margin-bottom:16px}h1{margin:0 0 6px}p{color:#506070}label{font-weight:600;margin-right:8px}select,button{font:inherit;padding:9px 12px;border:1px solid #b7c4d0;border-radius:8px;background:white}button{background:#145da0;color:white;border:0;cursor:pointer}button:disabled{opacity:.5;cursor:wait}#map{width:100%;height:min(65vh,600px);background:#f8fafc;border:1px solid #dce4eb;border-radius:8px}.legend{display:flex;gap:18px}.dot{display:inline-block;width:12px;height:12px;border-radius:50%;margin-right:5px}.status{min-height:1.5em;color:#506070}.metrics{display:flex;gap:22px;flex-wrap:wrap}.metric b{display:block;font-size:1.3rem}
+  </style>
+</head>
+<body>
+  <header><h1>PathSnap</h1><p>Compare candidate classifier output with HMM route reconstruction.</p>
+    <label for="split">Dataset</label><select id="split"><option value="student_test">Student test</option><option value="train">Train</option></select>
+    <label for="trip">Trip</label><select id="trip"></select> <button id="run">Reconstruct route</button><div id="status" class="status" role="status"></div>
+  </header>
+  <section><div class="metrics" id="metrics">Choose a trip to begin.</div><div class="legend"><span><i class="dot" style="background:#94a3b8"></i>GPS fixes</span><span><i class="dot" style="background:#e07a27"></i>Classifier only</span><span><i class="dot" style="background:#087e68"></i>HMM route</span></div><svg id="map" viewBox="0 0 1000 600" role="img" aria-label="GPS observations and predicted routes"></svg></section>
+  <script>
+    const split=document.querySelector('#split'), trip=document.querySelector('#trip'), run=document.querySelector('#run'), status=document.querySelector('#status'), map=document.querySelector('#map'), metrics=document.querySelector('#metrics');
+    async function loadTrips(){status.textContent='Loading trips…';try{const r=await fetch(`/trips?split=${split.value}`);if(!r.ok)throw Error((await r.json()).detail||r.statusText);const d=await r.json();trip.replaceChildren(...d.trip_ids.map(id=>new Option(id,id)));status.textContent=`${d.trip_ids.length} trips available.`}catch(e){status.textContent=`Could not load trips: ${e.message}`}}
+    function draw(d){const pts=d.gps_track.map(p=>[p.longitude,p.latitude]);if(!pts.length)return;const xs=pts.map(p=>p[0]),ys=pts.map(p=>p[1]),xmin=Math.min(...xs),xmax=Math.max(...xs),ymin=Math.min(...ys),ymax=Math.max(...ys),dx=xmax-xmin||1e-8,dy=ymax-ymin||1e-8;const xy=p=>[35+(p[0]-xmin)/dx*930,565-(p[1]-ymin)/dy*530];const line=rows=>rows.map(r=>{const c=d.arc_coordinates[r.arc_id];if(!c)return '';const a=xy(c[0]),b=xy(c[1]);return `<line x1="${a[0]}" y1="${a[1]}" x2="${b[0]}" y2="${b[1]}"/>`}).join('');map.innerHTML=`<g fill="none" stroke="#e07a27" stroke-width="2" opacity=".45">${line(d.classifier_only)}</g><g fill="none" stroke="#087e68" stroke-width="4" stroke-linecap="round">${line(d.predicted_route)}</g><g fill="#64748b">${pts.map(p=>{const q=xy(p);return `<circle cx="${q[0]}" cy="${q[1]}" r="2.6"/>`}).join('')}</g>`;metrics.innerHTML=`<span class="metric"><b>${d.observations}</b>observations</span><span class="metric"><b>${d.valid_transitions}/${Math.max(0,d.observations-1)}</b>connected HMM transitions</span><span class="metric"><b>${d.invalid_transitions}</b>segment breaks</span>`}
+    split.addEventListener('change',loadTrips);run.addEventListener('click',async()=>{if(!trip.value)return;run.disabled=true;status.textContent='Reconstructing route…';try{const r=await fetch(`/predict/${encodeURIComponent(trip.value)}?split=${split.value}`,{method:'POST'});const d=await r.json();if(!r.ok)throw Error(d.detail||r.statusText);draw(d);status.textContent=`Route reconstruction complete for ${d.trip_id}.`}catch(e){status.textContent=`Prediction failed: ${e.message}`}finally{run.disabled=false}});loadTrips();
+  </script>
+</body></html>
