@@ -32,21 +32,22 @@ Fixes whose aligned route arc is >75 m away are `ref_ok=0` (route does not cover
 ## Experimental protocol
 Seed 42. 5-fold `GroupKFold` **by trip** on the 80 training trips; training rows = ref-ok, every 4th observation (233,935 rows). Median imputation (fit per fold) for all models, StandardScaler for scale-sensitive ones.
 Decision threshold chosen on out-of-fold training predictions only. Student-test (10 trips) = development comparison, all observations scored. Evaluator data never read. Top-1 counts candidate misses as errors.
-**Primary selection metric: CV observation-level Top-1** - it is the quantity the route stage consumes (best candidate per fix), unlike candidate-level accuracy/F1 which is dominated by the 80% negative class.
+**Primary map-matching metric: observation-level Top-1** because the route stage consumes the best candidate per fix. Model selection also considered probability quality for HMM emissions; LightGBM was retained for competitive Top-1 and the best student-test log loss, not because it led CV Top-1.
 
-## Results (all from actual runs)
-| Model | Family | CV macro-F1 | CV Top-1 (mean±std) | CV continuity | Test acc | Test prec (macro) | Test recall (macro) | Test macro-F1 | Test log loss | **Test Top-1** | Test continuity | Train Top-1 | Train s | Infer µs/cand |
-|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
-| Logistic Regression | Linear / probabilistic | 0.7859 | 0.7457±0.0344 | 0.7346 | 0.8667 | 0.7862 | 0.8100 | 0.7970 | 0.2900 | **0.7774** | 0.8717 | 0.7494 | 0.2 | 0.08 |
-| Gaussian Naive Bayes | Probabilistic generative | 0.8010 | 0.7414±0.0382 | 0.7345 | 0.8809 | 0.8099 | 0.8154 | 0.8126 | 0.5062 | **0.7804** | 0.8779 | 0.7439 | 0.2 | 0.17 |
-| Random Forest | Bagging ensemble (trees) | 0.8503 | 0.7694±0.0559 | 0.7468 | 0.9165 | 0.8612 | 0.8828 | 0.8714 | 0.1952 | **0.8180** | 0.8964 | 0.8356 | 13.6 | 4.18 |
-| HistGradientBoosting | Boosting (sklearn) | 0.8476 | 0.7689±0.0548 | 0.7459 | 0.9160 | 0.8616 | 0.8788 | 0.8698 | 0.1943 | **0.8121** | 0.8942 | 0.8403 | 2.4 | 3.72 |
-| LightGBM (untuned) | Boosting (leaf-wise GBDT) | 0.8495 | 0.7710±0.0548 | 0.7486 | 0.9155 | 0.8598 | 0.8813 | 0.8699 | 0.1914 | **0.8148** | 0.8970 | 0.8495 | 3.9 | 12.56 |
-| MLP (64,32) | Neural network | 0.8446 | 0.7640±0.0555 | 0.7447 | 0.9128 | 0.8564 | 0.8748 | 0.8651 | 0.1973 | **0.8085** | 0.8967 | 0.8040 | 32.5 | 1.65 |
+## Results (source: `results/model_comparison.csv`)
 
-**Selected Phase-1 baseline: LightGBM (untuned)** (highest CV Top-1 0.771). Honest caveat: the top four models are within one CV std (~0.055 across trip folds) of each other - the ranking among tree/boosting/MLP models is **not statistically decisive**; LightGBM is also the slowest tree model at inference. RF has the best student-test Top-1 (0.8180). Linear/NB models are clearly worse.
-Overfitting: LightGBM train Top-1 0.850 vs CV 0.771 vs student-test 0.815 (moderate generalisation gap; student-test trips are easier - 0.1% unreliable refs vs 10.3% in train).
-Why lower than the legacy 0.88: only 7 per-row features (no neighbouring-fix context, no topology), top-5 candidates, genuine 1.9-2.8% miss rate. The legacy numbers are not comparable.
+The comparison uses five-fold `GroupKFold` by trip for cross-validation and the 10-trip student-test set for development-time comparison. The evaluator set is not used to train, tune, or select the model.
+
+| Model | CV Macro F1 | CV Top-1 mean ± SD | Student Macro F1 | Student Top-1 | Student Log Loss | Student continuity |
+|---|---:|---:|---:|---:|---:|---:|
+| Logistic Regression | 0.7860 | 0.7457 ± 0.0344 | 0.7970 | 0.7774 | 0.2901 | 0.8717 |
+| Gaussian Naive Bayes | 0.8010 | 0.7413 ± 0.0383 | 0.8126 | 0.7805 | 0.5063 | 0.8782 |
+| Random Forest | 0.8503 | 0.7704 ± 0.0547 | 0.8712 | 0.8195 | 0.1961 | 0.8972 |
+| HistGradientBoosting | 0.8487 | **0.7723 ± 0.0532** | 0.8686 | 0.8114 | 0.1949 | 0.8932 |
+| LightGBM (untuned) | 0.8495 | 0.7709 ± 0.0545 | 0.8704 | 0.8151 | **0.1917** | 0.8974 |
+| MLP (64,32) | 0.8434 | 0.7640 ± 0.0560 | 0.8667 | 0.8091 | 0.1974 | 0.8982 |
+
+**Selected Phase 1 baseline: untuned LightGBM.** It remained competitive on Top-1 and had the lowest student-test log loss, which supports its use as a probability-producing input to the HMM. It did not lead every metric: HistGradientBoosting had the highest mean CV Top-1, while Random Forest had the highest student-test Top-1 and Macro F1. The CV differences among the leading nonlinear models are small relative to fold-to-fold variation, so this is a practical selection rather than a statistically decisive win on every measure.
 
 ## Reproduce (Windows PowerShell)
 

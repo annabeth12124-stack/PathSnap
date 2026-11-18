@@ -3,7 +3,7 @@
  "model_name": "LightGBM",
  "best_trial": 14,
  "best_value": 0.84922755096798,
- "objective": "mean fold Macro F1 (5-fold GroupKFold by trip, pooled-OOF threshold)",
+ "objective": "mean fold Macro F1 at fixed threshold 0.50 (5-fold GroupKFold by trip)",
  "params": {
   "n_estimators": 600,
   "learning_rate": 0.010063574121249752,

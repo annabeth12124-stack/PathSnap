@@ -24,6 +24,13 @@ Top-1 accuracy is the share of reference-reliable GPS fixes whose selected arc m
 
 The HMM uses classifier `prob_obs` as its emission likelihood and a Laplace compatibility potential based on the difference between GPS displacement and shortest directed network distance. An impossible transition has probability zero. If all transitions into a fix are impossible, Viterbi starts a new segment and decodes that segment independently.
 
-## Current scope and remaining evidence
+## Completed two-laptop demo and evidence
 
-`README_TUNING.md` documents the classifier interface. Before presenting this as deployment-ready, run the service on the actual server laptop, open it from the second laptop, and save the connection log and screenshots under `results/integration/`. Confirm the actual LAN IP and firewall policy on the deployment machines; they are machine-specific. The evaluator trip set appears only after its archive is extracted into `data/` so the resulting folder is `data/evaluator_test/`.
+The service and route viewer were demonstrated across two laptops on the local network. The saved evidence is in `results/integration/`:
+
+- `api-laptop-log.png` shows successful HTTP 200 requests and the prediction log for evaluator-test trip `00000059`.
+- `laptop2-ui.png` shows the route map and per-trip metrics for the same trip.
+
+The API accepts `train`, `student_test`, and `evaluator_test` splits when their folders are present. It reads reference routes on the server and sends aggregate per-trip scores to the browser; raw reference routes and aligned per-fix labels are not returned. The UI also provides an all-trips panel, but the saved screenshot is a single-trip result and must not be presented as a ten-trip average.
+
+The recorded trip has 1,031 reference-reliable fixes, HMM Top-1 accuracy 90.69%, classifier-only Top-1 87.97%, route continuity 100%, route arc-set F1 88.95%, and API processing time 8.36 seconds. These figures describe trip `00000059` only. The model and decoder must not be tuned using evaluator-test results.
